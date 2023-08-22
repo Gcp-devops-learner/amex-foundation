@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"add_service_project","Source":"../../../../../modules/service_project/","Dir":"../../../../../modules/service_project"},{"Key":"","Source":"","Dir":"."},{"Key":"subnet","Source":"terraform-google-modules/network/google//modules/subnets","Version":"4.1.0","Dir":".terraform/modules/subnet/modules/subnets"}]}

@@ -1,0 +1,110 @@
+/**********************************
+Making BGP Session from Prod
+**********************************/
+#Prod to shared - East
+
+resource "google_compute_router_interface" "east_router_interface1" {
+  name       = "${terraform.workspace}-east-router-interface1"
+  router     = local.prod_router_east_name
+  region     = "us-east4"
+  ip_range   = var.east_router_interface1_iprange #"169.254.0.1/30"
+  vpn_tunnel = google_compute_vpn_tunnel.east_prodtoshared_1.name
+  depends_on = [google_compute_vpn_tunnel.east_prodtoshared_1]
+}
+
+resource "google_compute_router_peer" "east_router_peer1" {
+  name                      = "east-router-peer1"
+  router                    = local.prod_router_east_name
+  region                    = "us-east4"
+  peer_ip_address           = var.east_router_peer1_ip #"169.254.0.2"
+  peer_asn                  = 64530
+  advertised_route_priority = 100
+  interface                 = google_compute_router_interface.east_router_interface1.name
+  depends_on = [google_compute_router_interface.east_router_interface1]
+}
+
+
+#Prod to shared - East - For HA
+
+resource "google_compute_router_interface" "east_router_interface2" {
+  name       = "${terraform.workspace}-east-router-interface2"
+  router     = local.prod_router_east_name
+  region     = "us-east4"
+  ip_range   = var.east_router_interface2_iprange #"169.254.0.5/30"
+  vpn_tunnel = google_compute_vpn_tunnel.east_prodtoshared_2.name
+  depends_on = [
+    google_compute_vpn_tunnel.east_prodtoshared_2
+  ]
+}
+
+resource "google_compute_router_peer" "east_router_peer2" {
+  name                      = "east-router-peer2"
+  router                    = local.prod_router_east_name
+  region                    = "us-east4"
+  peer_ip_address           = var.east_router_peer2_ip #"169.254.0.6"
+  peer_asn                  = 64530
+  advertised_route_priority = 100
+  interface                 = google_compute_router_interface.east_router_interface2.name
+  depends_on = [
+    google_compute_router_interface.east_router_interface2
+  ]
+}
+
+
+
+
+
+/**********************************
+Making BGP Session from Prod
+**********************************/
+#Prod to shared - central
+
+resource "google_compute_router_interface" "central_router_interface1" {
+  name       = "${terraform.workspace}-central-router-interface1"
+  router     = local.prod_router_central_name
+  region     = "us-central1"
+  ip_range   = "169.254.1.1/30"
+  vpn_tunnel = google_compute_vpn_tunnel.central_prodtoshared_1.name
+  depends_on = [
+    google_compute_vpn_tunnel.central_prodtoshared_1
+  ]
+}
+
+resource "google_compute_router_peer" "central-router_peer1" {
+  name                      = "central-router-peer1"
+  router                    = local.prod_router_central_name
+  region                    = "us-central1"
+  peer_ip_address           = var.central_router_peer1_ip #"169.254.1.2"
+  peer_asn                  = 64531
+  advertised_route_priority = 100
+  interface                 = google_compute_router_interface.central_router_interface1.name
+  depends_on = [
+    google_compute_router_interface.central_router_interface1
+  ]
+}
+
+#Prod to shared - central - fOr HA
+
+resource "google_compute_router_interface" "central_router_interface2" {
+  name       = "${terraform.workspace}-central-router-interface2"
+  router     = local.prod_router_central_name
+  region     = "us-central1"
+  ip_range   = "169.254.1.5/30"
+  vpn_tunnel = google_compute_vpn_tunnel.central_prodtoshared_2.name
+  depends_on = [
+    google_compute_vpn_tunnel.central_prodtoshared_2
+  ]
+}
+
+resource "google_compute_router_peer" "central_router_peer2" {
+  name                      = "central-router-peer2"
+  router                    = local.prod_router_central_name
+  region                    = "us-central1"
+  peer_ip_address           = var.central_router_peer2_ip #"169.254.1.6"
+  peer_asn                  = 64531
+  advertised_route_priority = 100
+  interface                 = google_compute_router_interface.central_router_interface2.name
+  depends_on = [
+    google_compute_router_interface.central_router_interface2
+  ]
+}
